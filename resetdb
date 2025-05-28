@@ -1,0 +1,11 @@
+#!/bin/bash
+
+docker compose down postgresql
+docker volume rm bc_pg-data-15
+docker compose up -d postgresql
+sleep 5
+yarn migrate
+
+if [ -n "$FLOX_ENV" ]; then
+    flox services restart backend
+fi

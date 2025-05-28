@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Initialize variables with default values or empty strings
+email="tester@onebrief.com"
+firstname="te"
+lastname="ster"
+password="l33tP@ssw0rdz0mg"
+
+# Function to display usage information
+usage() {
+    echo "Usage: $0 --email <email> --firstname <firstname> --lastname <lastname> --password <password>"
+    exit 1
+}
+
+# Parse command-line options
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --email) email="$2"; shift ;;
+        --firstname) firstname="$2"; shift ;;
+        --lastname) lastname="$2"; shift ;;
+        --password) password="$2"; shift ;;
+        -h|--help) usage ;;
+        *) echo "Unknown parameter passed: $1"; usage; exit 1 ;;
+    esac
+    shift
+done
+
+# Define the JSON payload
+json_payload=$(cat <<EOF
+{
+  "email": "$email",
+  "name": "$firstname$lastname",
+  "password": "$password",
+  "confirmPassword": "$password",
+  "firstName": "$firstname",
+  "lastName": "$lastname",
+  "rank": "Maj",
+  "jobTitle": "J5 Planner",
+  "organization": "CJTF Alpha",
+  "parentOrganization": "Sierra Fleet",
+  "termsAccepted": true
+}
+EOF
+)
+
+# Perform the POST request using curl
+response=$(curl -s -X POST http://localhost:3000/api/auth/signup \
+-H "Content-Type: application/json" \
+-d "$json_payload")
+
+# Print the response
+echo $response
+echo "Username: $firstname$lastname"
+echo "Password: $password"

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+cat > $FLOX_ENV_PROJECT/packages/bc-app/.env <<EOF
+SKIP_PREFLIGHT_CHECK=true
+BROWSER=none
+PORT=3000
+REACT_APP_URL=http://localhost:3000
+REACT_APP_SERVER_URL=http://localhost:3001
+EOF
+
+cat > $FLOX_ENV_PROJECT/packages/bc-server/.env <<EOF
+AUTHENTICATION_PROVIDERS=Local,BearerToken
+BC_PORT=3001
+BC_BASE_URL=http://localhost:3000
+BC_GOTENBERG_URL=http://localhost:5001
+BC_PRINT_URL=http://host.docker.internal:3000
+BC_REDIS_HOST=localhost
+BC_SHOW_UNCLASSIFIED_DISCLAIMER=true
+BC_GRAFANA_URL=http://localhost:3553/grafana
+BC_OGC_API_ENABLED=true
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+MAPS_DATASETS_CLOUD_KEY_OVERRIDE="q7CReVUZIvqVp3ywGOia"
+SYS_ADMIN_USERNAMES=''
+#EMAIL_VERIFICATION_ENABLED= # defaults to false; see note below for details
+#EMAIL_VERIFICATION_STARTTIME= # defaults to 0; see note below for details
+#USER_VERIFICATION_ENABLED= # defaults to false; see note below for details
+EOF
