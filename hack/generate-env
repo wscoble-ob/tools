@@ -19,7 +19,6 @@ BC_SHOW_UNCLASSIFIED_DISCLAIMER=true
 BC_GRAFANA_URL=http://localhost:3553/grafana
 BC_OGC_API_ENABLED=true
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
-MAPS_DATASETS_CLOUD_KEY_OVERRIDE="q7CReVUZIvqVp3ywGOia"
 SYS_ADMIN_USERNAMES=''
 #EMAIL_VERIFICATION_ENABLED= # defaults to false; see note below for details
 #EMAIL_VERIFICATION_STARTTIME= # defaults to 0; see note below for details

@@ -15,7 +15,7 @@ while [ "$(docker compose ps postgresql --format json | jq '.Health')" != '"heal
 done
 yarn migrate
 flox services start backend frontend
-while [ "$(curl http://localhost:3000/api/status | jq '.status')" != '"ok"' ]; do
+while [ "$(curl -s http://localhost:3000/api/status | jq '.status')" != '"ok"' ]; do
     echo "Waiting for api to start..."
     sleep 1
 done
