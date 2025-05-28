@@ -13,8 +13,8 @@
             name = "wscoble-tools";
             src = ./hack;
             installPhase = ''
-                mkdir -p $out
-                cp $src/* $out
+                mkdir -p $out/bin
+                cp $src/* $out/bin
             '';
         };
       in {
