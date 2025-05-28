@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ -d node_modules ]; then
+    # nothing to do, this is meant to set up from scratch
+    exit 0
+fi
+
+generate-env
+yarn
+flox services start
+while [ $(docker compose ps postgresql --format json | jq '.Health') != '"healthy"' ]; do
+    sleep 2
+done
+yarn migrate
+flox services restart backend
