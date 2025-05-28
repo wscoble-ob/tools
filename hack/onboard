@@ -7,9 +7,12 @@ fi
 
 generate-env
 yarn
+docker volume rm bc_pg-data-15 || true
 flox services start
 while [ $(docker compose ps postgresql --format json | jq '.Health') != '"healthy"' ]; do
-    sleep 2
+    sleep 1
 done
 yarn migrate
 flox services restart backend
+createuser
+open http://localhost:3000
