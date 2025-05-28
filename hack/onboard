@@ -1,18 +1,20 @@
 #!/bin/bash
 
 if [ -d node_modules ]; then
-    # nothing to do, this is meant to set up from scratch
+    echo "This project is already onboarded. To onboard, run 'git clean -xdf' first."
     exit 0
 fi
 
 generate-env
 yarn
 docker volume rm bc_pg-data-15 || true
-flox services start
-while [ $(docker compose ps postgresql --format json | jq '.Health') != '"healthy"' ]; do
+flox services start infra
+while [ "$(docker compose ps postgresql --format json | jq '.Health')" != '"healthy"' ]; do
+    echo "Waiting for postgresql to start..."
     sleep 1
 done
 yarn migrate
-flox services restart backend
+flox services start backend frontend
+sleep 5
 createuser
 open http://localhost:3000
