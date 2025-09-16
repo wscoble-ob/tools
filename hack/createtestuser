@@ -38,7 +38,8 @@ json_payload=$(cat <<EOF
   "jobTitle": "J5 Planner",
   "organization": "CJTF Alpha",
   "parentOrganization": "Sierra Fleet",
-  "termsAccepted": true
+  "termsAccepted": true,
+  "accountType": "admin"
 }
 EOF
 )
