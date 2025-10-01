@@ -19,5 +19,5 @@ while [ "$(curl -s http://localhost:3000/api/status | jq '.status')" != '"ok"' ]
     echo "Waiting for api to start..."
     sleep 1
 done
-createuser
+createtestuser
 open http://localhost:3000
