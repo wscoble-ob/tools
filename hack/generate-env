@@ -9,6 +9,33 @@ REACT_APP_SERVER_URL=http://localhost:3001
 EOF
 
 cat > $FLOX_ENV_PROJECT/packages/bc-server/.env <<EOF
+# Demo configuration enabling S3-backed attachment retrieval.
+# Copy to `.env` (or export these variables) before running the server.
+
+# --- Binary data read configuration ---
+BC_BINARY_DATA_READ_ORDER=s3,db
+
+# --- Binary data write configuration ---
+# Limit writes to S3 so the database only stores encrypted pointers.
+BC_BINARY_DATA_WRITE_TARGETS=s3
+
+# --- S3 storage settings ---
+# Name of the bucket that will store attachment binaries.
+BC_S3_BUCKET=demo-binary-data
+
+# 64-byte (128 hex chars) symmetric key used to encrypt data at rest in S3.
+# Generate a fresh value for real demos: `openssl rand -hex 32`
+BC_SYMMETRIC_ENCRYPTION_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+# AWS SDK credentials (use your demo IAM user or localstack/minio access key).
+AWS_ACCESS_KEY_ID=FOO
+AWS_SECRET_ACCESS_KEY=BAR
+# AWS_REGION=us-east-1
+AWS_ENDPOINT_URL=http://localhost:7070
+
+# --- Misc server defaults helpful for demos ---
+BC_DISABLE_HTTPS=true
+BC_LOG_LEVEL=debug
 AUTHENTICATION_PROVIDERS=Local,BearerToken
 BC_PORT=3001
 BC_BASE_URL=http://localhost:3000
@@ -23,4 +50,16 @@ SYS_ADMIN_USERNAMES=''
 #EMAIL_VERIFICATION_ENABLED= # defaults to false; see note below for details
 #EMAIL_VERIFICATION_STARTTIME= # defaults to 0; see note below for details
 #USER_VERIFICATION_ENABLED= # defaults to false; see note below for details
+STRICT_MODE=true
+BC_EXEC_REPORT_ENABLED=false
+NODE_ENV=development
+BC_LOG_LEVEL=debug
+BC_ADVANCED_METRICS=false
+
+BC_POSTGRES_HOST=127.0.0.1
+BC_POSTGRES_PORT=5432
+BC_POSTGRES_DATABASE=postgres
+BC_POSTGRES_USER=postgres
+BC_POSTGRES_PASSWORD=postgres
+BC_POSTGRES_TLS=false
 EOF
