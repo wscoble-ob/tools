@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v gh >/dev/null 2>&1; then
+    echo "gh CLI is required but not installed or not in PATH" >&2
+    exit 1
+fi
+
+if ! command -v helm >/dev/null 2>&1; then
+    echo "helm CLI is required but not installed or not in PATH" >&2
+    exit 1
+fi
+
+if ! command -v kubectl >/dev/null 2>&1; then
+    echo "kubectl CLI is required but not installed or not in PATH" >&2
+    exit 1
+fi
+
+if ! command -v aws >/dev/null 2>&1; then
+    echo "aws CLI is required to authenticate with the cluster" >&2
+    exit 1
+fi
+
+if [ -t 0 ]; then
+    echo "No values provided on stdin. Pipe YAML via a here-doc (<<YAML ... YAML)." >&2
+    exit 1
+fi
+
+cluster_context="onebrief-cluster-review-apps"
+echo "Switching Kubernetes context to '$cluster_context'."
+if ! kubectl config use-context "$cluster_context" >/dev/null 2>&1; then
+    echo "Failed to switch kubernetes context to '$cluster_context'." >&2
+    exit 1
+fi
+
+patch_values=$(mktemp)
+current_values=$(mktemp)
+trap 'rm -f "$patch_values" "$current_values"' EXIT
+
+cat > "$patch_values"
+
+if [ ! -s "$patch_values" ]; then
+    echo "Provided values are empty; aborting." >&2
+    exit 1
+fi
+
+if ! pr_number=$(gh pr view --json number --jq .number 2>/dev/null); then
+    echo "Unable to determine the current pull request number with 'gh pr view'." >&2
+    echo "Ensure you are on a branch with an open PR." >&2
+    exit 1
+fi
+
+namespace="${pr_number}-merge"
+release_name="onebrief"
+chart_ref="oci://harbor.onebrief.tools/charts/onebrief"
+chart_version="0.0.0-pr.${pr_number}"
+
+echo "Fetching existing values for release '$release_name' in namespace '$namespace'."
+if helm get values "$release_name" \
+        --namespace "$namespace" \
+        --output yaml >"$current_values" 2>/dev/null; then
+    :
+else
+    echo "No existing release found. Using empty baseline values." >&2
+    printf '{}\n' >"$current_values"
+fi
+
+if [ ! -s "$current_values" ] || [ "$(tr -d '[:space:]' <"$current_values")" = "null" ]; then
+    printf '{}\n' >"$current_values"
+fi
+
+echo "Upgrading Helm release '$release_name' in namespace '$namespace' using chart '$chart_ref' version '$chart_version'."
+
+helm upgrade \
+    --install \
+    "$release_name" "$chart_ref" \
+    --version "$chart_version" \
+    --namespace "$namespace" \
+    --values "$current_values" \
+    --values "$patch_values"
