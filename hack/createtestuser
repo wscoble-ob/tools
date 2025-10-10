@@ -5,10 +5,12 @@ email="tester@onebrief.com"
 firstname="te"
 lastname="ster"
 password="l33tP@ssw0rdz0mg"
+host="localhost:3000"
+schema="http"
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 --email <email> --firstname <firstname> --lastname <lastname> --password <password>"
+    echo "Usage: $0 --email <email> --firstname <firstname> --lastname <lastname> --password <password> --host <host>"
     exit 1
 }
 
@@ -19,6 +21,7 @@ while [[ "$#" -gt 0 ]]; do
         --firstname) firstname="$2"; shift ;;
         --lastname) lastname="$2"; shift ;;
         --password) password="$2"; shift ;;
+	--host) host="$2"; schema="https"; shift ;;
         -h|--help) usage ;;
         *) echo "Unknown parameter passed: $1"; usage; exit 1 ;;
     esac
@@ -45,7 +48,7 @@ EOF
 )
 
 # Perform the POST request using curl
-response=$(curl -s -X POST http://localhost:3000/api/auth/signup \
+response=$(curl -s -X POST $schema://$host/api/auth/signup \
 -H "Content-Type: application/json" \
 -d "$json_payload")
 
