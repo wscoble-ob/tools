@@ -15,6 +15,13 @@
           awscli2
           kubectl
         ];
+        pgRamdiskPatch = pkgs.writeTextFile {
+          name = "pg-ramdisk-patch";
+          destination = "/pg-ramdisk-patch.yaml";
+          text = ''
+            # TODO: populate this YAML payload
+          '';
+        };
         tools = pkgs.stdenv.mkDerivation {
           name = "wscoble-tools";
           src = ./hack;
@@ -31,6 +38,7 @@
         };
       in {
         defaultPackage = tools;
+        packages.pg-ramdisk-patch = pgRamdiskPatch;
         devShell = pkgs.mkShell {
           buildInputs = runtimeDeps;
         };
